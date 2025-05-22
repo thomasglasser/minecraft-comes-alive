@@ -1,17 +1,17 @@
 package net.mca.mixin.client;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.mca.MCAClient;
 import net.mca.client.model.PlayerArmorExtendedModel;
 import net.mca.client.model.VillagerEntityModelMCA;
-import net.minecraft.client.model.Dilation;
-import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
-import net.minecraft.client.render.entity.model.BipedEntityModel;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.geom.builders.CubeDeformation;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,8 +19,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(ArmorFeatureRenderer.class)
-public abstract class MixinArmorFeatureRenderer<T extends LivingEntity, A extends BipedEntityModel<T>> {
+@Mixin(HumanoidArmorLayer.class)
+public abstract class MixinArmorFeatureRenderer<T extends LivingEntity, A extends HumanoidModel<T>> {
     @Shadow
     protected abstract boolean usesInnerModel(EquipmentSlot slot);
 
@@ -30,15 +30,15 @@ public abstract class MixinArmorFeatureRenderer<T extends LivingEntity, A extend
 
     private A createModel(float dilation) {
         //noinspection unchecked
-        return (A)new PlayerArmorExtendedModel<T>(TexturedModelData.of(VillagerEntityModelMCA.armorData(new Dilation(dilation)), 64, 32).createModel());
+        return (A)new PlayerArmorExtendedModel<T>(LayerDefinition.create(VillagerEntityModelMCA.armorData(new CubeDeformation(dilation)), 64, 32).bakeRoot());
     }
 
-    @Inject(method = "render(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;ILnet/minecraft/entity/LivingEntity;FFFFFF)V", at = @At("HEAD"))
-    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
-        mca$injectionActive = livingEntity instanceof PlayerEntity && MCAClient.useGeneticsRenderer(livingEntity.getUuid());
+    @Inject(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V", at = @At("HEAD"))
+    public void render(PoseStack matrixStack, MultiBufferSource vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
+        mca$injectionActive = livingEntity instanceof Player && MCAClient.useGeneticsRenderer(livingEntity.getUUID());
     }
 
-    @Inject(method = "getModel", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "getArmorModel", at = @At("HEAD"), cancellable = true)
     private void getArmor(EquipmentSlot slot, CallbackInfoReturnable<A> cir) {
         if (mca$injectionActive) {
             cir.setReturnValue(this.usesInnerModel(slot) ? mca$leggingsModel : mca$bodyModel);

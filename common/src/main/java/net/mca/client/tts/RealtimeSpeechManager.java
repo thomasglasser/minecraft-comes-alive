@@ -2,9 +2,8 @@ package net.mca.client.tts;
 
 import com.google.gson.*;
 import net.mca.MCA;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -60,7 +59,7 @@ public class RealtimeSpeechManager {
             if (AudioCache.get(hash, output -> {
                 downloadAudio(output, voice, text);
             }, cacheable)) {
-                Identifier soundLocation = MCA.locate("tts_cache/" + hash);
+                ResourceLocation soundLocation = MCA.locate("tts_cache/" + hash);
                 SpeechManager.INSTANCE.playSound(pitch, entity, soundLocation);
             }
         });

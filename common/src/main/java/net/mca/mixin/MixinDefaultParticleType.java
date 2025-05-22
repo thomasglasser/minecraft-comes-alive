@@ -1,13 +1,13 @@
 package net.mca.mixin;
 
-import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.core.particles.SimpleParticleType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
-@Mixin(DefaultParticleType.class)
+@Mixin(SimpleParticleType.class)
 public interface MixinDefaultParticleType {
     @Invoker("<init>")
-    static DefaultParticleType init(boolean alwaysShow) {
+    static SimpleParticleType init(boolean alwaysShow) {
         return null;
     }
 }

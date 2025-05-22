@@ -1,12 +1,12 @@
 package net.mca.mixin;
 
 import net.mca.entity.VillagerEntityMCA;
-import net.minecraft.entity.JumpingMount;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.Saddleable;
-import net.minecraft.entity.passive.AbstractHorseEntity;
-import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.inventory.InventoryChangedListener;
+import net.minecraft.world.ContainerListener;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.PlayerRideableJumping;
+import net.minecraft.world.entity.Saddleable;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -14,8 +14,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(AbstractHorseEntity.class)
-abstract class MixinHorseBaseEntity extends AnimalEntity implements InventoryChangedListener, JumpingMount, Saddleable {
+@Mixin(AbstractHorse.class)
+abstract class MixinHorseBaseEntity extends Animal implements ContainerListener, PlayerRideableJumping, Saddleable {
     @Shadow @Nullable public abstract LivingEntity getControllingPassenger();
 
     MixinHorseBaseEntity() { super(null, null); }

@@ -1,12 +1,12 @@
 package net.mca.mixin;
 
-import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
-@Mixin(VillagerEntity.class)
+@Mixin(Villager.class)
 public interface MixinVillagerEntityInvoker {
-    @Invoker("beginTradeWith")
-    void invokeBeginTradeWith(PlayerEntity player);
+    @Invoker("startTrading")
+    void invokeBeginTradeWith(Player player);
 }

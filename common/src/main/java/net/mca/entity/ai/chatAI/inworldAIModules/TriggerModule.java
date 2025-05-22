@@ -5,8 +5,7 @@ import net.mca.entity.VillagerEntityMCA;
 import net.mca.entity.ai.MoveState;
 import net.mca.entity.ai.chatAI.inworldAIModules.api.Interaction;
 import net.mca.entity.ai.chatAI.inworldAIModules.api.TriggerEvent;
-import net.minecraft.server.network.ServerPlayerEntity;
-
+import net.minecraft.server.level.ServerPlayer;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
@@ -16,7 +15,7 @@ import java.util.function.BiConsumer;
 public class TriggerModule {
 
     /** Map for trigger name => actions */
-    private static final Map<String, BiConsumer<ServerPlayerEntity, VillagerEntityMCA>> triggerActions = ImmutableMap.of(
+    private static final Map<String, BiConsumer<ServerPlayer, VillagerEntityMCA>> triggerActions = ImmutableMap.of(
             "follow-player", (p, v) -> v.getVillagerBrain().setMoveState(MoveState.FOLLOW, p),
             "stay-here", (p, v) -> v.getVillagerBrain().setMoveState(MoveState.STAY, p),
             "move-freely", (p, v) -> v.getVillagerBrain().setMoveState(MoveState.MOVE, p),
@@ -32,12 +31,12 @@ public class TriggerModule {
      * @param player Player in the conversation
      * @param villager Villager in the conversation
      */
-    public void processTriggers(Interaction interaction, ServerPlayerEntity player, VillagerEntityMCA villager) {
+    public void processTriggers(Interaction interaction, ServerPlayer player, VillagerEntityMCA villager) {
         // Get triggers sent from server
         TriggerEvent[] triggerEvents = interaction.outgoingTriggers();
         for (TriggerEvent event : triggerEvents) {
             // Get the action for the trigger
-            BiConsumer<ServerPlayerEntity, VillagerEntityMCA> action = triggerActions.get(event.trigger());
+            BiConsumer<ServerPlayer, VillagerEntityMCA> action = triggerActions.get(event.trigger());
 
             // Execute the action if it exists
             if (action != null) {
